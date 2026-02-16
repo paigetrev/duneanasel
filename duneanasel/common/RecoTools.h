@@ -17,7 +17,7 @@ inline double ParticleLength(T const &p) {
 }
 
 template <typename T, typename C = Proxyable_t<caf::SRInteraction, T>>
-inline auto const *GetRecoParticles(T const &nd_int, RecoBranch reco = kSPINE) {
+inline auto const *GetRecoParticles(T const &nd_int, RecoBranch reco = kPandora) {
   auto const *parts =
       &nd_int.part.pandora; // set it to pandora first so that we can get the
                             // right template-dependent type, then set it to the
@@ -44,7 +44,7 @@ inline auto const *GetRecoParticles(T const &nd_int, RecoBranch reco = kSPINE) {
 //  instantiation
 template <typename T, typename C = Proxyable_t<caf::SRInteraction, T>>
 inline auto const *GetLongestParticle(T const &nd_int,
-                                      RecoBranch reco = kSPINE) {
+                                      RecoBranch reco = kPandora) {
 
   auto parts = GetRecoParticles(nd_int, reco);
 

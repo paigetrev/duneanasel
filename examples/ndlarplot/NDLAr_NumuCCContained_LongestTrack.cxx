@@ -26,15 +26,16 @@ int main(int argc, char const *argv[]) {
   ch.GetEntry(0);
 
   TFile hout("mutracklen.root", "RECREATE");
-  TH1D mutracklen("mutracklen", ";Track Length [cm]; Count", 100, 0, 1000);
-  TH1D alltracklen("alltracklen", ";Track Length [cm]; Count", 100, 0, 1000);
+  TH1D mutracklen("mutracklen", ";Track Length [cm]; Count", 50, 0, 450);
+  TH1D alltracklen("alltracklen", ";Track Length [cm]; Count", 50, 0, 450);
   for (Long64_t i = 0; i < ents; ++i) {
     ch.GetEntry(i);
 
-    std::cout << "Event: " << i << " with " << SR->common.ixn.dlp.size()
-              << " dlp interactions." << std::endl;
+    std::cout << "Event: " << i << " with " << SR->common.ixn.pandora.size()
+              << " pandora interactions." << std::endl;
+ //   std::cout << "TEST" << SR->common.ixn.pandora.part.pandora.start.x.size() << std::endl;
     int j = 0;
-    for (auto const &nd_int : SR->common.ixn.dlp) {
+    for (auto const &nd_int : SR->common.ixn.pandora) {
       std::cout << "  Interaction: " << j++ << " | InFV: "
                 << (sel::beam::ndlar::InFV(nd_int) ? "true" : "false")
                 << " | AllPrimaryParticlesContained: "
@@ -42,6 +43,7 @@ int main(int argc, char const *argv[]) {
                         ? "true"
                         : "false");
       auto longp = ana::GetLongestParticle(nd_int);
+
       if (longp) {
         std::cout << " | LongestParticle: { pid: " << longp->pdg
                   << ", len: " << ana::ParticleLength(*longp) << " cm"
@@ -59,7 +61,7 @@ int main(int argc, char const *argv[]) {
 
       mutracklen.Fill(ana::ParticleLength(*ana::GetLongestParticle(nd_int)));
 
-      for (auto const &p : nd_int.part.dlp) {
+      for (auto const &p : nd_int.part.pandora) {
         alltracklen.Fill(ana::ParticleLength(p));
       }
 
