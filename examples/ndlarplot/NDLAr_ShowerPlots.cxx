@@ -61,18 +61,20 @@ int main(int argc, char const *argv[]) {
         for(auto const &p : nd_int.part.pandora){
             if(p.pdg == 22){
                 photonCounter += 1; 
+                showerEnergies->Fill(p.E);
             }
            
         }
         if(photonCounter > 1){
-        std::cout << "Event: " << i << " Interaction: " << interactionID << " Contains: " << photonCounter << " Photons" << std::endl;
+            std::cout << "Event: " << i << " Interaction: " << interactionID << " Contains: " << photonCounter << " Photons" << std::endl;
+            std::cout << "Particles Contained: " << std::endl;
             for(auto const &p : nd_int.part.pandora){
-            showerEnergies->Fill(p.E);
-            }
+                std::cout << p.pdg << std::endl;           
+            } 
         }
     }
 
-    }
+  }
   
   hout.Write();
 }
