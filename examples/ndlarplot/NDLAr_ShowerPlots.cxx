@@ -37,46 +37,28 @@ int main(int argc, char const *argv[]) {
     std::cout << "****************************************************************** " << std ::endl;
     std::cout << "* Event: " << i << " with " << SR->common.ixn.pandora.size() << " reco interactions and " << SR->mc.nu.size()   << " true interactions. *" << std::endl;   
     std::cout << " ***************************************************************** " << std ::endl;
-    /*  
-    int showersCounter = 0; 
-    int trueInteractionCounter = 0;
-    for(auto const &nd_true_int : SR->mc.nu){
-        
-
-        if(sel::beam::ndlar::numode::HasTruePrimary(nd_true_int, 111)){
-
-        std::cout << "########## TRUE INTERACTION NUMBER:  " << nd_true_int.id << " INDEX: " << trueInteractionCounter << nd_true_int.genieIdx << " ###########"  << std::endl;
-        trueInteractionCounter +=1;
-        std::cout << " Containins The Following Particles: " << std::endl;
-        
-        for(auto const &p : nd_true_int.prim){
-            std::cout << "True PDG: " << p.pdg << " Interaction ID = " << p.interaction_id << " With True Energy: " << p.p.T() << std::endl;
-        }
-
-        if(sel::beam::ndlar::numode::HasTruePrimary(nd_true_int, 111)){
-            for(auto const &truthPart : nd_true_int.prim){
-                if(truthPart.pdg == 111){
-                    energyPi0->Fill(truthPart.p.T());
-                    containsPi0->Fill(i);
-                }
-            }
-        }
-        else{
-            continue;
-        }
-        }
-    
-    }
-    */
 
     // Loop over Reco interactions to begin truth matching
 
     for(auto const &nd_reco_int : SR->common.ixn.pandora){
-     std::cout << "###### RECO INTERACTION NUMBER " << nd_reco_int.id << " ######" << std::endl;
+        
+        if(!sel::beam::ndlar::InFV(nd_reco_int)){
+            std::cout << "###### Vertex NOT in FV ######" << std::endl;
+        }
+        if(!sel::beam::ndlar::AllPrimaryParticlesContained(nd_reco_int)){
+            std::cout << "###### All Primary Particles NOT Contained ######" << std::endl;
+        }
+        
+        if(sel::beam::ndlar::InFV(nd_reco_int) and sel::beam::ndlar::AllPrimaryParticlesContained(nd_reco_int)){
+            std::cout << "###### InFV and All Primaries are Contained! ######" << std::endl; 
+        }
+           
         int showersCounter = 0;
         int trueInteractionIndex = nd_reco_int.truth[0];
         float truthOverlap = nd_reco_int.truthOverlap[0];
 
+
+     std::cout << "###### RECO INTERACTION NUMBER " << nd_reco_int.id << " ######" << std::endl;
         if(trueInteractionIndex < SR->mc.nu.size()){
         std::cout << "True Neutrino Energy: " <<  SR->mc.nu[trueInteractionIndex].E << " GeV.     Reco Neutrino Energy: " << nd_reco_int.Enu.calo/1000 << " GeV. " << std::endl;
         }
@@ -100,7 +82,7 @@ int main(int argc, char const *argv[]) {
             int trueType = recPart.truth[0].type; 
             int recoPDG = recPart.pdg;
 
-          //  std::cout << " There are: " << trueIntIndexSize << " possible true particles." << std::endl;
+            std::cout << " Reco Object Type: " << recPart.origRecoObjType << std::endl;
 
             if(trueIntIndex != trueInteractionIndex){
                 std::cout << "CHECK THIS EVENT! Saved branch level interaction ID and particle level interaction ID DO NOT MATCH!" << std::endl;
@@ -133,6 +115,12 @@ int main(int argc, char const *argv[]) {
                     std::cout << " Associated particle index is outside of true particle size. It is: " << truePartIndex << " With PDG: " << recoPDG <<                     " Type: " << trueType << " and Energy:  " << recPart.E << ". Skipping this reco particle." << std::endl;
                     continue;
                 }
+              if(sel::beam::ndlar::numode::HasTruePrimary(SR->mc.nu[trueIntIndex],111)){
+
+                 std::cout << "FOUND!" << std::endl;
+                 std::cout <<"Pi 0 is at event: " << i << " Int Index: " << trueIntIndex << " Reco Index: " << nd_reco_int.id << std::endl;
+             
+             }
                 
           
              int primaryTruthPDG = SR->mc.nu[trueIntIndex].prim[truePartIndex].pdg; 
@@ -140,7 +128,7 @@ int main(int argc, char const *argv[]) {
              int gID = SR->mc.nu[trueIntIndex].prim[truePartIndex].G4ID;
              
              std::cout << "Reco Particle Interaction ID: " << trueIntIndex << " Reco Particle ID: " << truePartIndex << std::endl;
-             std::cout << " Reco Particle PDG: " << recoPDG << " Type: " << trueType << " With Reco Energy: " << recPart.E << std::endl;
+             std::cout << " Reco Particle PDG: " << recoPDG << " Type: " << trueType << " With Reco Energy: " << recPart.E << " Score: " << recPart.score << std::endl;
              
              std::cout << " Truth Matched Information " << std::endl;
              std::cout << " True Particle PDG: " << primaryTruthPDG << " With True Energy: " << primaryTruthEnergy << std::endl;
@@ -178,75 +166,12 @@ int main(int argc, char const *argv[]) {
                 std::cout << "Reco Particle Interaction ID: " << trueIntIndex << " Reco Particle ID: " << truePartIndex << std::endl;
                 std::cout << " Reco Particle PDG: " << recoPDG << " Type: " << trueType << " With Reco Energy: " << recPart.E << std::endl;
             }
-                   // recoPDGs->Fill(recoPDG);
-
-            /*        if(recoPDG == 22 or recoPDG == 11){
-                        showersCounter += 1;
-                   
-                    }
-            
-                    else{
-                    continue;
-                    }
-                }
-          
-            if(showersCounter > 0){
-                nshowers->Fill(showersCounter);
-            }
-          */     
+     
         
         }
   }
 }
 
-
-  
-  /*
-    ///Trial Stuff just keeping for reference
-    for(auto const &nd_int : SR->mc.nu){
-  //      interactionCounter += 1;
-        if(sel::beam::ndlar::numode::HasTruePrimary(nd_int, 111)){
-            std::cout << "Pi0 Found!" << std::endl;
-            for(auto const &p : nd_int.prim){
-                std::cout << "Particle: " << p.pdg << " Truth:" << std::endl;
-                
-            }
-
-        }      
-    }
-    for(auto const &nd_int : SR->nd.lar.pandora){
-        int numberShowers = nd_int.showers.size();
-        if(numberShowers > 0){
-            nshowers->Fill(numberShowers);
-        }
-        else{
-        continue;
-        }
-    }
-    
-    for (auto const &nd_int : SR->common.ixn.pandora) {
-        int photonCounter = 0;
-        int interactionID = nd_int.id;
-        //std::cout << "ID: " << interactionID << "Particles Conatained: " << std::endl;
-        for (auto const &p : nd_int.part.pandora){
-            std::cout << " Truth: " << p.truth[0].ixn << std::endl;
-            //std::cout << SR->mc.nu::Particle(p.truth[0].ixn) << std::endl;
-            
-            //FOR LATER: Consider that there are more than 1 true matched check the trueOverlap to choose which is best match 
-        
-       
-            //if(photonCounter > 1){
-             //   std::cout << "Event: " << i << " Interaction: " << interactionID << " Contains: " << photonCounter << " Photons" << std::endl;
-             //   std::cout << "Particles Contained: " << std::endl;
-              //  for(auto const &p : nd_int.part.pandora){
-            //        std::cout << p.pdg << std::endl;           
-               //     std::cout << "Particle is Primary?: " << p.primary << std::endl;
-             //   } 
-            }
-        }
-  //  }
-  //}
-  */
   hout.Write();
   }
 
