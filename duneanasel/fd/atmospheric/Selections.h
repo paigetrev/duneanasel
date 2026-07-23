@@ -7,9 +7,9 @@
 namespace sel {
 namespace atm {
 
-enum Sample { kRejected = 0, kNuMuCCLike, kNuECCLike, kNCLike };
-
 namespace fd1x2x6 {
+
+enum Sample { kRejected = 0, kNuMuCCLike, kNuECCLike, kNCLike };
 
 // private correspondance from Pierre Granger
 template <typename T, typename C = Proxyable_t<caf::SRInteraction, T>>
@@ -51,15 +51,19 @@ inline Sample ApplySelection(T const &fd_int) {
     return sel::atm::kRejected;
   }
   if (sel::atm::fd1x2x6::NuMuCCLike(fd_int)) {
-    return sel::atm::kNuMuCCLike;
+    return sel::atm::fd1x2x6::kNuMuCCLike;
   } else if (sel::atm::fd1x2x6::NuMuCCLike(fd_int)) {
-    return sel::atm::kNuECCLike;
+    return sel::atm::fd1x2x6::kNuECCLike;
   } else if (sel::atm::fd1x2x6::NCLike(fd_int)) {
-    return sel::atm::kNCLike;
+    return sel::atm::fd1x2x6::kNCLike;
   }
-  return sel::atm::kRejected;
+  return sel::atm::fd1x2x6::kRejected;
 }
 
 } // namespace fd1x2x6
+
+using namespace FDHD = fd1x2x6;
+using namespace FD2 = FDHD;
+
 } // namespace atm
 } // namespace sel

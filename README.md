@@ -12,7 +12,7 @@ selections/observables package for DUNE ND and FD high-level analysis.
 
 *Design Choices:*
 * Make use of nested namespaces to scope generically named selection and projection functions: __e.g.__ `sel::beam::fd1x8x6::NuMuCCLike`.
-* Use SINFAE template-based type constraints to provide single functions that can take either `duneanaobj`ect instances or `caf::Proxy<T>` wrappers of instances.
+* Use SFINAE template-based type constraints to provide single functions that can take either `duneanaobj`ect instances or `caf::Proxy<T>` wrappers of instances.
 * Use unscoped enum types to identify events passing cuts for specific samples.
 * Provide a CMake build system capable of building the `duneanaobj` dependency without user intervention, under the expectation that `duneanaobj` changes much more slowly than development on the common tools package and so non-expert co-development of both package is infrequent.
 
@@ -23,14 +23,14 @@ Example selection functions for a beam neutrino selection in FD2 are implemented
 ```c++
 //in duneanasel/fd/beam/Selections.h
 
-namespace sel::beam {
+namespace sel::beam::fd1x8x6 {
   enum Sample { kRejected = 0, kNuMuCCLike, kNuECCLike, kNCLike };
 
   template <typename T, typename SRTypeConstraint = Proxyable_t<caf::SRInteraction, T>>
-  bool fd1x8x6::InFV(T const &fd_int);
+  bool InFV(T const &fd_int);
 
   template <typename T, typename SRTypeConstraint = Proxyable_t<caf::SRInteraction, T>>
-  Sample fd1x8x6::numode::ApplySelection(T const &fd_int);
+  Sample numode::ApplySelection(T const &fd_int);
 
 }
 ```
@@ -42,14 +42,14 @@ The current selection functions for the atmospheric neutrino selection in FD1 ar
 ```c++
 //in duneanasel/fd/atm/Selections.h
 
-namespace sel::atm {
+namespace sel::atm::fd1x2x6 {
   enum Sample { kRejected = 0, kNuMuCCLike, kNuECCLike, kNCLike };
 
   template <typename T, typename SRTypeConstraint = Proxyable_t<caf::SRInteraction, T>>
-  bool fd1x2x6::InFV(T const &fd_int);
+  bool InFV(T const &fd_int);
 
   template <typename T, typename SRTypeConstraint = Proxyable_t<caf::SRInteraction, T>>
-  Sample fd1x2x6::ApplySelection(T const &fd_int);
+  Sample ApplySelection(T const &fd_int);
 }
 ```
 
@@ -126,7 +126,7 @@ The structure of these functions follow the same logic as the Selections functio
 //in duneanasel/fd/beam/Observables.h
 
 template <typename T, typename SRTypeConstraint = Proxyable_t<caf::SRInteraction, T>>
-float proj::beam::fd1x8x6::ENuReco(T const &fd_int, sel::beam::Sample smpl)
+float proj::beam::fd1x8x6::ENuReco(T const &fd_int, sel::beam::fd1x8x6::Sample smpl)
 ```
 
 ## Buildme

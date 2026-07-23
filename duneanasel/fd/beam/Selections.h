@@ -6,10 +6,9 @@
 
 namespace sel {
 namespace beam {
+namespace fd1x8x6 {
 
 enum Sample { kRejected = 0, kNuMuCCLike, kNuECCLike, kNCLike };
-
-namespace fd1x8x6 {
 
 // from CVN training, here:
 // https://github.com/DUNE/dunereco/blob/ff92d1bc966c6e3cf7db1a434c8a723e74b0712c/dunereco/CVN/art/CVNZlibMaker_module.cc#L295
@@ -56,24 +55,27 @@ inline bool NCLike(T const &fd_int) {
 }
 
 template <typename T, typename C = Proxyable_t<caf::SRInteraction, T>>
-inline sel::beam::Sample ApplySelection(T const &fd_int) {
+inline sel::beam::fd1x8x6::Sample ApplySelection(T const &fd_int) {
 
   if (!sel::beam::fd1x8x6::InFV(fd_int)) {
-    return sel::beam::kRejected;
+    return sel::beam::fd1x8x6::kRejected;
   }
 
   if (sel::beam::fd1x8x6::numode::NuMuCCLike(fd_int)) {
-    return sel::beam::kNuMuCCLike;
+    return sel::beam::fd1x8x6::kNuMuCCLike;
   } else if (sel::beam::fd1x8x6::numode::NuECCLike(fd_int)) {
-    return sel::beam::kNuECCLike;
+    return sel::beam::fd1x8x6::kNuECCLike;
   } else if (sel::beam::fd1x8x6::numode::NCLike(fd_int)) {
-    return sel::beam::kNCLike;
+    return sel::beam::fd1x8x6::kNCLike;
   }
-  return sel::beam::kRejected;
+  return sel::beam::fd1x8x6::kRejected;
 }
 
 } // namespace numode
 } // namespace fd1x8x6
+
+using namespace FDVD = fd1x8x6;
+using namespace FD1 = FDVD;
 
 namespace fd1x2x6 {
 // from CVN training, here:
@@ -97,6 +99,9 @@ inline bool InFV(T const &fd_int) {
 }
 
 } // namespace fd1x2x6
+
+using namespace FDHD = fd1x2x6;
+using namespace FD2 = FDHD;
 
 } // namespace beam
 } // namespace sel
