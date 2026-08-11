@@ -63,12 +63,12 @@ int main(int argc, char const *argv[]) {
            
           int showersCounter = 0;
           int truthIndexSize = nd_reco_int.truthOverlap.size();
-          int max_int_idx = 0;
+         // int max_int_idx = 0;
 
-          if(truthIndexSize > 1){
-              auto max_int_it = std::max_element(nd_reco_int.truthOverlap.begin(), nd_reco_int.truthOverlap.end());
-              int max_int_idx = std::distance(nd_reco_int.truthOverlap.begin(), max_int_it);
-          }
+         // if(truthIndexSize > 1){
+          auto max_int_it = std::max_element(nd_reco_int.truthOverlap.begin(), nd_reco_int.truthOverlap.end());
+          int max_int_idx = std::distance(nd_reco_int.truthOverlap.begin(), max_int_it);
+          //}
 
           
           int trueInteractionIndex = nd_reco_int.truth[max_int_idx];
@@ -91,31 +91,49 @@ int main(int argc, char const *argv[]) {
           for(auto const &truePart : SR->mc.nu[trueInteractionIndex].prim){
               std::cout << "True PDG: " << truePart.pdg << " With Energy: " << truePart.p.T() << " G4ID: " << truePart.G4ID << std::endl;
           }
-
+          
           
           std::cout << "------- Reco Pandora Particles has: " << nd_reco_int.part.pandora.size() << " entries. -------" << std::endl;
           std::cout << "------- Reco Interaction Contains the Following Particles: ------- " << std::endl;   
-        
+          
+          for(auto const &recPart : nd_reco_int.part.pandora){
+              const bool isPrimary = recPart.primary;
+              const float particleE = recPart.E;
+              
+              std::cout << "Is Particle Primary? " << isPrimary << " With Energy: " << particleE << std::endl;
+              std::cout << "Truth Info is: " << std::endl;
+              for(const auto &truth_particle_id : recPart.truth){
+                  std::cout << " SRInteraction idx: " << truth_particle_id.ixn << " SRParticle idx: " << truth_particle_id.part << std::endl; 
+          
+              }
+          }
+         
+          std::cout << "------- Truth Matching Below -------" << std::endl;
           int recoParticleCounter = 0;
           for(auto const &recPart : nd_reco_int.part.pandora){                        
               int trueIntIndexSize = recPart.truth.size();
-              int max_part_idx = 0;
-              if(trueIntIndexSize > 1){
-                  auto max_part_it = std::max_element(recPart.truthOverlap.begin(), recPart.truthOverlap.end());
-                  int max_part_idx = std::distance(recPart.truthOverlap.begin(), max_part_it);
-              }
+              std::cout << "There are: " << trueIntIndexSize << " saved truth indices." << std::endl;
+
+              auto max_part_it = std::max_element(recPart.truthOverlap.begin(), recPart.truthOverlap.end());
+              int max_part_idx = std::distance(recPart.truthOverlap.begin(), max_part_it);
+              std::cout << "Best Match Index is: " << max_part_idx << std::endl;
   
               int trueIntIndex = recPart.truth[max_part_idx].ixn; 
               int truePartIndex = recPart.truth[max_part_idx].part;
               int trueType = recPart.truth[max_part_idx].type; 
-             
+           
+
               std::cout << "Reco Particle: " << recoParticleCounter << std::endl;
               recoParticleCounter ++;
-              if(trueIntIndex > SR->mc.nu.size()){
+              if(trueType != 1){
+                  std::cout << "Particle is not primary. Skipping..." << std::endl;
+                  continue;
+              }
+              if(trueIntIndex >= SR->mc.nu.size()){
                   std::cout << "Truth Interaction Index is out of range:  " << trueIntIndex << std::endl;
                   continue;
               }
-              if(truePartIndex > SR->mc.nu[trueIntIndex].prim.size()){
+              if(truePartIndex >= SR->mc.nu[trueIntIndex].prim.size()){
                   std::cout << "Truth Particle Index is out of range: " << truePartIndex << std::endl;
                   continue;
               }
