@@ -5,7 +5,17 @@ target_link_libraries(NDLAr_NumuCCContained_LongestTrack duneanasel::all)
 add_executable(NDLAr_NumuCCContained_VtxPosition NDLAr_NumuCCContained_VtxPosition.cxx)
 target_link_libraries(NDLAr_NumuCCContained_VtxPosition duneanasel::all)
 
+add_executable(NDLAr_ShowerPlots NDLAr_ShowerPlots.cxx)
+target_link_libraries(NDLAr_ShowerPlots duneanasel::all)
+
+
+add_executable(ONLY_NDLAr_ShowerPlots ONLY_NDLAr_ShowerPlots.cxx)
+target_link_libraries(ONLY_NDLAr_ShowerPlots duneanasel::all)
+
+
 install(TARGETS
   NDLAr_NumuCCContained_LongestTrack
   NDLAr_NumuCCContained_VtxPosition
+  NDLAr_ShowerPlots 
+  ONLY_NDLAr_ShowerPlots
   DESTINATION bin)
